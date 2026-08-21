@@ -1,0 +1,32 @@
+{
+  "categories": [
+    {
+      "id": 3,
+      "name": "Furniture",
+      "slug": "furniture",
+      "url": "",
+      "parentId": null
+    },
+    {
+      "id": 5,
+      "name": "test",
+      "slug": "test",
+      "url": "7e389ffa-52f1-4716-961f-4ad0f2454c73.png",
+      "parentId": null
+    },
+    {
+      "id": 6,
+      "name": "Food",
+      "slug": "food",
+      "url": "",
+      "parentId": null
+    },
+    {
+      "id": 7,
+      "name": "Electronic",
+      "slug": "electronic",
+      "url": "",
+      "parentId": null
+    }
+  ]
+}
