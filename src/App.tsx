@@ -1,7 +1,7 @@
 // import Timer from "./components/Timer.tsx";
 // import {useState} from "react";
 //import CategoriesList from "./components/categories/CategoriesList.tsx";
-import Layout from "@/components/Layout.tsx";
+import Layout from "@/components/layout/Layout.tsx";
 
 function App() {
     //const [isVisible, setIsVisible] = useState(false);

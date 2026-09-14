@@ -1,8 +1,10 @@
 import { NavLink } from "react-router";
 import AppRoutes from "@/enums/AppRoutes.ts";
 import Search from "@/components/layout/Search.tsx";
+import { useAuth } from "@/context/AuthContext.tsx";
 
 const Header = () => {
+    const { user, logout } = useAuth();
 
     const menu = [
         { title: "Home", path: AppRoutes.HOME},
@@ -10,8 +12,10 @@ const Header = () => {
         { title: "Products", path: AppRoutes.PRODUCTS },
         { title: "About", path: AppRoutes.ABOUT },
         { title: "Contacts", path: "contacts" },
-        { title: "Register", path: "register" },
-        { title: "Login", path: "login" }
+        ...(!user ? [
+            { title: "Register", path: AppRoutes.REGISTER },
+            { title: "Login", path: AppRoutes.LOGIN },
+        ] : [])
     ];
 
     return (
@@ -59,7 +63,20 @@ const Header = () => {
     </span>
                     </button>
 
-                    <button>👤</button>
+                    {user ? (
+                        <div className="flex items-center gap-3">
+                            <span className="hidden text-sm font-medium text-blue-200 lg:inline">Welcome, {user.email}</span>
+                            <button
+                                className="rounded-md border border-slate-600 px-3 py-1 text-sm transition hover:border-blue-400 hover:text-blue-300"
+                                onClick={logout}
+                                type="button"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <NavLink className="text-xl transition hover:text-blue-400" to={AppRoutes.LOGIN} aria-label="Login">👤</NavLink>
+                    )}
                 </div>
 
             </div>

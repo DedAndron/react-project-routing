@@ -1,222 +1,66 @@
-// import { useState } from "react";
-//
-// export default function Register() {
-//     const [email, setEmail] = useState("");
-//     const [password, setPassword] = useState("");
-//     const [confirmPassword, setConfirmPassword] = useState("");
-//
-//     const [error, setError] = useState("");
-//     const [success, setSuccess] = useState("");
-//
-//     const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
-//         event.preventDefault();
-//
-//         setError("");
-//         setSuccess("");
-//
-//         if (!email || !password || !confirmPassword) {
-//             setError("Заповніть усі поля");
-//             return;
-//         }
-//
-//         if (password.length < 6) {
-//             setError("Пароль повинен містити щонайменше 6 символів");
-//             return;
-//         }
-//
-//         if (password !== confirmPassword) {
-//             setError("Паролі не збігаються");
-//             return;
-//         }
-//
-//         setSuccess("Реєстрація успішна!");
-//
-//         console.log({
-//             email,
-//             password,
-//         });
-//     };
-//
-//     return (
-//         <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-//             <form
-//                 onSubmit={handleSubmit}
-//                 className="w-full max-w-md space-y-5 rounded-2xl bg-white p-8 shadow-lg"
-//             >
-//                 {/* Заголовок */}
-//                 <div className="text-center">
-//                     <h1 className="text-2xl font-bold text-gray-900">
-//                         Реєстрація
-//                     </h1>
-//
-//                     <p className="mt-2 text-sm text-gray-500">
-//                         Створіть новий акаунт
-//                     </p>
-//                 </div>
-//
-//                 {/* Помилка */}
-//                 {error && (
-//                     <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-//                         {error}
-//                     </div>
-//                 )}
-//
-//                 {/* Успіх */}
-//                 {success && (
-//                     <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
-//                         {success}
-//                     </div>
-//                 )}
-//
-//                 {/* Email */}
-//                 <div>
-//                     <label
-//                         htmlFor="email"
-//                         className="mb-2 block text-sm font-medium text-gray-700"
-//                     >
-//                         Email
-//                     </label>
-//
-//                     <input
-//                         id="email"
-//                         name="email"
-//                         type="email"
-//                         value={email}
-//                         onChange={(event) => setEmail(event.target.value)}
-//                         placeholder="example@email.com"
-//                         autoComplete="email"
-//                         className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-//                     />
-//                 </div>
-//
-//                 {/* Пароль */}
-//                 <div>
-//                     <label
-//                         htmlFor="password"
-//                         className="mb-2 block text-sm font-medium text-gray-700"
-//                     >
-//                         Пароль
-//                     </label>
-//
-//                     <input
-//                         id="password"
-//                         name="password"
-//                         type="password"
-//                         value={password}
-//                         onChange={(event) => setPassword(event.target.value)}
-//                         placeholder="••••••••"
-//                         autoComplete="new-password"
-//                         className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-//                     />
-//                 </div>
-//
-//                 {/* Підтвердження пароля */}
-//                 <div>
-//                     <label
-//                         htmlFor="confirmPassword"
-//                         className="mb-2 block text-sm font-medium text-gray-700"
-//                     >
-//                         Підтвердження пароля
-//                     </label>
-//
-//                     <input
-//                         id="confirmPassword"
-//                         name="confirmPassword"
-//                         type="password"
-//                         value={confirmPassword}
-//                         onChange={(event) => setConfirmPassword(event.target.value)}
-//                         placeholder="••••••••"
-//                         autoComplete="new-password"
-//                         className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-//                     />
-//                 </div>
-//
-//                 {/* Кнопка */}
-//                 <button
-//                     type="submit"
-//                     className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-//                 >
-//                     Зареєструватися
-//                 </button>
-//             </form>
-//         </div>
-//     );
-// }
+import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { useAuth } from "@/context/AuthContext.tsx";
+import { registerUser } from "@/services/auth.ts";
 
 type RegisterFormData = {
     email: string;
     password: string;
-    confirmPassword: string;
+    repeat_password: string;
 };
+
 export default function Register() {
+    const navigate = useNavigate();
+    const { saveSession } = useAuth();
+    const [serverError, setServerError] = useState("");
     const {
         register,
         handleSubmit,
-        watch,
-        formState: { errors },
-    } = useForm<RegisterFormData>({
-        defaultValues: {
-            email: "test@gmail.com",
-            password: "",
-            confirmPassword: "",
-        },
-    });
+        getValues,
+        formState: { errors, isSubmitting },
+    } = useForm<RegisterFormData>();
 
-    const onSubmit: SubmitHandler<RegisterFormData> = (data) => {
-        console.log(data);
+    const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
+        setServerError("");
+
+        try {
+            const tokens = await registerUser(data.email, data.password, data.repeat_password);
+            saveSession(data.email, tokens);
+            navigate("/");
+        } catch (error) {
+            setServerError(error instanceof Error ? error.message : "Registration failed. Please try again.");
+        }
     };
 
-    const validateEmail = (value: string) => {
-        return value.length === 12 || "Email must be at least 12 characters long";
-    };
     return (
-        <>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <label htmlFor="email">Email:</label>
-
-                <input
-                    type="email"
-                    {...register("email", {
-                        required: "Email is required",
-                        validate: validateEmail,
-                    })}
-                />
-                {errors.email && (
-                    <span style={{ color: "red" }}>{errors.email.message}</span>
-                )}
-                <br />
-                <label htmlFor="password">Password:</label>
-
-                <input
-                    type="password"
-                    {...register("password", {
-                        required: "Password is required",
-                        minLength: {
-                            value: 6,
-                            message: "Password must be at least 6 characters long",
-                        },
-                    })}
-                />
-                {errors.password && (
-                    <span style={{ color: "red" }}>{errors.password.message}</span>
-                )}
-                <br />
-                <label htmlFor="confirmPassword">Confirm Password:</label>
-                <input
-                    type="password"
-                    {...register("confirmPassword", {
-                        required: "Confirm Password is required",
-                    })}
-                />
-                {errors.confirmPassword && (
-                    <span style={{ color: "red" }}>{errors.confirmPassword.message}</span>
-                )}
-                <br />
-                <button type="submit">Register</button>
+        <section className="mx-auto max-w-md rounded-xl bg-white p-8 shadow">
+            <h1 className="text-2xl font-bold text-slate-900">Create an account</h1>
+            <p className="mt-2 text-sm text-slate-600">Register to continue shopping.</p>
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+                <FormField label="Email" error={errors.email?.message}>
+                    <input id="email" type="email" autoComplete="email" className="auth-input" {...register("email", { required: "Email is required" })} />
+                </FormField>
+                <FormField label="Password" error={errors.password?.message}>
+                    <input id="password" type="password" autoComplete="new-password" className="auth-input" {...register("password", { required: "Password is required", minLength: { value: 6, message: "Password must be at least 6 characters long" } })} />
+                </FormField>
+                <FormField label="Repeat password" error={errors.repeat_password?.message}>
+                    <input id="repeat_password" type="password" autoComplete="new-password" className="auth-input" {...register("repeat_password", { required: "Please repeat your password", validate: value => value === getValues("password") || "Passwords do not match" })} />
+                </FormField>
+                {serverError && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">{serverError}</p>}
+                <button className="w-full rounded-md bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Creating account..." : "Register"}
+                </button>
             </form>
-            {/* {errors && console.log(errors)} */}
-            Data: {watch("email")}
-        </>
+        </section>
     );
 }
+
+type FormFieldProps = { label: string; error?: string; children: import("react").ReactNode };
+const FormField = ({ label, error, children }: FormFieldProps) => (
+    <div>
+        <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor={label.toLowerCase().replace(" ", "_")}>{label}</label>
+        {children}
+        {error && <p className="mt-1 text-sm text-red-600" role="alert">{error}</p>}
+    </div>
+);

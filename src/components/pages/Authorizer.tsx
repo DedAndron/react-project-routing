@@ -1,65 +1,56 @@
+import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { useAuth } from "@/context/AuthContext.tsx";
+import { loginUser } from "@/services/auth.ts";
 
 type AuthorizerFormData = {
     email: string;
     password: string;
 };
+
 export default function Authorizer() {
+    const navigate = useNavigate();
+    const { saveSession } = useAuth();
+    const [serverError, setServerError] = useState("");
     const {
         register,
         handleSubmit,
-        watch,
-        formState: { errors },
-    } = useForm<AuthorizerFormData>({
-        defaultValues: {
-            email: "test@gmail.com",
-            password: ""
-        },
-    });
+        formState: { errors, isSubmitting },
+    } = useForm<AuthorizerFormData>();
 
-    const onSubmit: SubmitHandler<AuthorizerFormData> = (data) => {
-        console.log(data);
+    const onSubmit: SubmitHandler<AuthorizerFormData> = async (data) => {
+        setServerError("");
+
+        try {
+            const tokens = await loginUser(data.email, data.password);
+            saveSession(data.email, tokens);
+            navigate("/");
+        } catch (error) {
+            setServerError(error instanceof Error ? error.message : "Login failed. Please try again.");
+        }
     };
 
-    const validateEmail = (value: string) => {
-        return value.length === 12 || "Email must be at least 12 characters long";
-    };
     return (
-        <>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <label htmlFor="email">Email:</label>
-
-                <input
-                    type="email"
-                    {...register("email", {
-                        required: "Email is required",
-                        validate: validateEmail,
-                    })}
-                />
-                {errors.email && (
-                    <span style={{ color: "red" }}>{errors.email.message}</span>
-                )}
-                <br />
-                <label htmlFor="password">Password:</label>
-
-                <input
-                    type="password"
-                    {...register("password", {
-                        required: "Password is required",
-                        minLength: {
-                            value: 6,
-                            message: "Password must be at least 6 characters long",
-                        },
-                    })}
-                />
-                {errors.password && (
-                    <span style={{ color: "red" }}>{errors.password.message}</span>
-                )}
-                <br />
-                <button type="submit">Authorizer</button>
+        <section className="mx-auto max-w-md rounded-xl bg-white p-8 shadow">
+            <h1 className="text-2xl font-bold text-slate-900">Sign in</h1>
+            <p className="mt-2 text-sm text-slate-600">Enter your account details to continue.</p>
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+                <div>
+                    <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="email">Email</label>
+                    <input id="email" type="email" autoComplete="email" className="auth-input" {...register("email", { required: "Email is required" })} />
+                    {errors.email && <p className="mt-1 text-sm text-red-600" role="alert">{errors.email.message}</p>}
+                </div>
+                <div>
+                    <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="password">Password</label>
+                    <input id="password" type="password" autoComplete="current-password" className="auth-input" {...register("password", { required: "Password is required" })} />
+                    {errors.password && <p className="mt-1 text-sm text-red-600" role="alert">{errors.password.message}</p>}
+                </div>
+                {serverError && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">{serverError}</p>}
+                <button className="w-full rounded-md bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Signing in..." : "Login"}
+                </button>
             </form>
-            {/* {errors && console.log(errors)} */}
-            Data: {watch("email")}
-        </>
+        </section>
     );
 }
