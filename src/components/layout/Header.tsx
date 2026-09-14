@@ -9,7 +9,9 @@ const Header = () => {
         { title: "Categories", path: AppRoutes.CATEGORIES },
         { title: "Products", path: AppRoutes.PRODUCTS },
         { title: "About", path: AppRoutes.ABOUT },
-        { title: "Contacts", path: "contacts" }
+        { title: "Contacts", path: "contacts" },
+        { title: "Register", path: "register" },
+        { title: "Login", path: "login" }
     ];
 
     return (

@@ -1,32 +1,36 @@
-import type {ProductType} from "../types/ProductType.ts";
+import type { ProductType } from "../types/ProductType.ts";
 
-const products:ProductType[] = [
+const products: ProductType[] = [
     {
         id: 1,
-        title: "Ноутбук Lenovo IdeaPad",
+        name: "Ноутбук Lenovo IdeaPad",
         price: 24999,
+        description: "Ноутбук Lenovo IdeaPad для работы и повседневных задач.",
         is_active: true,
-        image: "laptop.png",
-        count: 12,
-        id_category: 1,
+        stockQty: 12,
+        category_id: 1,
+        images: ["laptop.png"],
     },
     {
         id: 2,
-        title: "Смартфон Samsung Galaxy",
+        name: "Смартфон Samsung Galaxy",
         price: 18999,
+        description: "Современный смартфон Samsung Galaxy с отличным экраном.",
         is_active: true,
-        image: "phone.png",
-        count: 8,
-        id_category: 2,
+        stockQty: 8,
+        category_id: 2,
+        images: ["phone.png"],
     },
     {
         id: 3,
-        title: "Smart Watch",
+        name: "Smart Watch",
         price: 12999,
+        description: "Умные часы для отслеживания активности и уведомлений.",
         is_active: false,
-        image: "watch.png",
-        count: 3,
-        id_category: 3,
+        stockQty: 3,
+        category_id: 3,
+        images: ["watch.png"],
     },
 ];
+
 export default products;

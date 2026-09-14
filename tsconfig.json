@@ -4,5 +4,8 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "verbatimModuleSyntax": false
+  "compilerOptions": {
+    "verbatimModuleSyntax": false
+  },
+
 }

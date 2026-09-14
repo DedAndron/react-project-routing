@@ -18,11 +18,12 @@ const CreateProduct = () => {
 
         const newProduct: ProductType = {
             id: products.length + 1,
-            title,
-            image,
+            name:title,
+            images : [...image],
+            description:"",
             price,
-            count,
-            id_category,
+            stockQty:count,
+            category_id:id_category,
             is_active,
         };
 

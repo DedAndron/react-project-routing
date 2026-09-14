@@ -2,19 +2,19 @@ import type {ProductType} from "../../../types/ProductType.ts";
 
 
 const Product = (prop:{product:ProductType})=>{
-    const{id, title, image,is_active,id_category,count, price} = prop.product;
+    const{id, name, images,is_active,category_id,stockQty, price} = prop.product;
     return (
         <div className="w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <img
-                src={image}
-                alt={title}
+                src={images[0]}
+                alt={name}
                 className="w-full h-40 object-contain bg-gray-100"
             />
 
             <div className="p-4 sm:p-5">
                 <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start">
                     <h2 className="text-lg sm:text-xl font-semibold text-gray-800 break-words">
-                        {title}
+                        {name}
                     </h2>
 
                     <span
@@ -36,12 +36,12 @@ const Product = (prop:{product:ProductType})=>{
 
                     <div className="flex justify-between">
                         <span>Категорія:</span>
-                        <span className="font-medium">{id_category}</span>
+                        <span className="font-medium">{category_id}</span>
                     </div>
 
                     <div className="flex justify-between">
                         <span>Кількість:</span>
-                        <span className="font-medium">{count} шт.</span>
+                        <span className="font-medium">{stockQty} шт.</span>
                     </div>
                 </div>
 
