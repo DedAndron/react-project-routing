@@ -1,6 +1,6 @@
 import type { AuthResponse, AuthTokens } from "@/types/Auth.ts";
 
-const apiBaseUrl = `${import.meta.env.VITE_PATH_TO_SERVER ?? ""}${import.meta.env.VITE_PATH_TO_API ?? "/api/"}`;
+const apiBaseUrl = `${import.meta.env.VITE_PATH_TO_SERVER}${import.meta.env.VITE_PATH_TO_API}`;
 
 const getErrorMessage = async (response: Response) => {
     try {
