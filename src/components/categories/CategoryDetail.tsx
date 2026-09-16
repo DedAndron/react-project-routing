@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {useParams} from "react-router";
 import type { CategoryType } from "@/types/CategoryType";
 import Category from "@/utils/Category.ts";
+import { assetUrl } from "@/services/api.ts";
 
 const CategoryDetail = () => {
     const { slug } = useParams(); //витягуємо slug з маршрута
@@ -9,8 +10,9 @@ const CategoryDetail = () => {
     const [category, setCategory] = useState<CategoryType | null>(null);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-        if (!slug)
+        if (!slug) {
             return;
+        }
 
         const loadCategory = async () => {
             try {
@@ -28,7 +30,7 @@ const CategoryDetail = () => {
 
         loadCategory();
 
-    }, []);
+    }, [slug]);
 
     if (loading) {
         return (
@@ -46,7 +48,7 @@ const CategoryDetail = () => {
         );
     }
 
-    const imageUrl = import.meta.env.VITE_PATH_TO_SERVER+category.url;
+    const imageUrl = assetUrl(category.url);
 
     return (
         <div className="mx-auto max-w-6xl rounded-2xl bg-white p-8 shadow-lg">

@@ -1,15 +1,16 @@
 import type { CategoryType } from "@/types/CategoryType";
 import {useNavigate} from "react-router";
+import { assetUrl } from "@/services/api.ts";
 
 
 
 const Category = ({ category }: {category:CategoryType}) => {
-    const imageUrl = import.meta.env.VITE_PATH_TO_SERVER+category.url;
+    const imageUrl = assetUrl(category.url);
     const navigate = useNavigate(); //для кнопки Назад
     return (
-            <div onClick={() => navigate(`/subcategories/${category.id}`)} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition hover:scale-105 hover:shadow-xl">
+        <div onClick={() => navigate(`/subcategories/${category.id}`)} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition hover:scale-105 hover:shadow-xl">
 
-           <img
+            <img
                 src={imageUrl}
                 alt={category.name}
                 className="h-52 w-full object-cover"

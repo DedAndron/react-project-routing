@@ -1,12 +1,11 @@
 import type {CategoryType} from "@/types/CategoryType.ts";
+import { apiUrl, getErrorMessage } from "@/services/api.ts";
 
 class Category {
-    private static readonly path:string = import.meta.env.VITE_PATH_TO_SERVER
-        + import.meta.env.VITE_PATH_TO_API
-        + "category/";
+    private static readonly path = "category/";
     public static async GetCategoryBySlug(slug: string):Promise<CategoryType|null> {
         const response = await fetch(
-            Category.path + slug
+            apiUrl(Category.path + slug)
         );
         if (!response.ok) {
             return null;
@@ -16,7 +15,7 @@ class Category {
 
     public static async GetAllCategories():Promise<CategoryType[]|null> {
         const response = await fetch(
-            Category.path
+            apiUrl(Category.path)
         );
         if (!response.ok) {
             return null;
@@ -26,7 +25,7 @@ class Category {
 
     public static async GetSubCategoryById(id: number):Promise<CategoryType[]|null> {
         const response = await fetch(
-            Category.path + 'sub/' + id
+            apiUrl(Category.path + 'sub/' + id)
         );
         if (!response.ok) {
             return null;
@@ -35,14 +34,14 @@ class Category {
     }
 
     public static async Create(category: Omit<CategoryType, "id">): Promise<CategoryType> {
-        const response = await fetch(Category.path, {
+        const response = await fetch(apiUrl(Category.path), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(category),
         });
 
         if (!response.ok) {
-            throw new Error("Не вдалося створити категорію.");
+            throw new Error(await getErrorMessage(response, "Не вдалося створити категорію."));
         }
 
         return await response.json();

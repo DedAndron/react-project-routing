@@ -1,4 +1,5 @@
 import type { ProductType } from "@/types/ProductType";
+import { assetUrl } from "@/services/api.ts";
 
 type Props = {
     product: ProductType;
@@ -8,7 +9,7 @@ const Product = ({ product }: Props) => {
 
     const image =
         product.images.length > 0
-            ? `${import.meta.env.VITE_PATH_TO_SERVER}products/${product.images[0]}`
+            ? assetUrl(`products/${product.images[0]}`)
             : "https://placehold.co/600x400";
 
     return (

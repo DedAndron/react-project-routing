@@ -1,12 +1,11 @@
 import type {ProductType} from "@/types/ProductType.ts";
+import { apiUrl, getErrorMessage } from "@/services/api.ts";
 
 class Product {
-    private static readonly path:string = import.meta.env.VITE_PATH_TO_SERVER
-        + import.meta.env.VITE_PATH_TO_API
-        + "product/";
+    private static readonly path = "product/";
     public static async GetProductsByCategoryId(id: number):Promise<ProductType[]|null> {
         const response = await fetch(
-            Product.path + 'by-category/'+id
+            apiUrl(Product.path + 'by-category/'+id)
         );
         if (!response.ok) {
             return null;
@@ -15,7 +14,7 @@ class Product {
     }
 
     public static async GetAllProducts(): Promise<ProductType[]|null> {
-        const response = await fetch(Product.path);
+        const response = await fetch(apiUrl(Product.path));
         if (!response.ok) {
             return null;
         }
@@ -23,14 +22,14 @@ class Product {
     }
 
     public static async Create(product: Omit<ProductType, "id">): Promise<ProductType> {
-        const response = await fetch(Product.path, {
+        const response = await fetch(apiUrl(Product.path), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(product),
         });
 
         if (!response.ok) {
-            throw new Error("Не вдалося створити товар.");
+            throw new Error(await getErrorMessage(response, "Не вдалося створити товар."));
         }
 
         return await response.json();
