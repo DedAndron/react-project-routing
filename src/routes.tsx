@@ -5,11 +5,13 @@ import Home from "@/components/pages/Home.tsx";
 import CategoriesList from "@/components/categories/CategoriesList.tsx";
 import CategoryDetail from "@/components/categories/CategoryDetail.tsx";
 import NotFoundPage from "@/components/pages/NotFound.tsx";
-import ProductsList from "@/components/test/product/ProductsList.tsx";
+import ProductsList from "@/components/product/ProductsList.tsx";
 import Error from "@/components/pages/Error.tsx";
 import AppRoutes from "@/enums/AppRoutes.ts";
 import Register from "@/components/pages/Register.tsx";
 import Authorizer from "@/components/pages/Authorizer.tsx";
+import CreateProduct from "@/components/product/CreateProduct.tsx";
+import CreateCategory from "@/components/categories/CreateCategory.tsx";
 
 export const routes = createBrowserRouter([
     {
@@ -33,15 +35,23 @@ export const routes = createBrowserRouter([
                 path: AppRoutes.ABOUT,
                 //Component: About
                 lazy:async () => {
-                        const module = await import('@/components/pages/About.tsx');
-        return {
-            Component: module.default,
-        };
-},
+                    const module = await import('@/components/pages/About.tsx');
+                    return {
+                        Component: module.default,
+                    };
+                },
             },
             {
                 path:AppRoutes.PRODUCTS,
                 Component:ProductsList
+            },
+            {
+                path: AppRoutes.CREATE_PRODUCT,
+                Component: CreateProduct,
+            },
+            {
+                path: AppRoutes.CREATE_CATEGORY,
+                Component: CreateCategory,
             },
             {
                 path: `${AppRoutes.CATEGORIES}/:slug`,

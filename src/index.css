@@ -46,3 +46,24 @@
 .auth-close:hover {
     color: rgb(15 23 42);
 }
+
+.form-input {
+    width: 100%;
+    border: 1px solid rgb(203 213 225);
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    color: rgb(15 23 42);
+}
+
+.form-input:focus {
+    border-color: rgb(59 130 246);
+    outline: 2px solid rgb(191 219 254);
+    outline-offset: 1px;
+}
+
+.form-error {
+    display: block;
+    margin-top: 0.25rem;
+    color: rgb(220 38 38);
+    font-size: 0.875rem;
+}

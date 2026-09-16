@@ -33,5 +33,19 @@ class Category {
         }
         return await response.json();
     }
+
+    public static async Create(category: Omit<CategoryType, "id">): Promise<CategoryType> {
+        const response = await fetch(Category.path, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(category),
+        });
+
+        if (!response.ok) {
+            throw new Error("Не вдалося створити категорію.");
+        }
+
+        return await response.json();
+    }
 }
 export default Category;
