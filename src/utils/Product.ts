@@ -14,7 +14,7 @@ class Product {
     }
 
     public static async GetAllProducts(): Promise<ProductType[]|null> {
-        const response = await fetch(apiUrl(Product.path));
+        const response = await fetch(apiUrl(Product.path + 'all'));
         if (!response.ok) {
             return null;
         }

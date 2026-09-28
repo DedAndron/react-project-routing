@@ -15,7 +15,7 @@ class Category {
 
     public static async GetAllCategories():Promise<CategoryType[]|null> {
         const response = await fetch(
-            apiUrl(Category.path)
+            apiUrl(Category.path + 'all')
         );
         if (!response.ok) {
             return null;
