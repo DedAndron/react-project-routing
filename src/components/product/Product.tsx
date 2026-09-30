@@ -1,17 +1,25 @@
 import type { ProductType } from "@/types/ProductType";
+import {useNavigate} from "react-router";
+import { assetUrl } from "@/services/api";
 
-type Props = {
-    product: ProductType;
-};
 
-const Product = ({ product }: Props) => {
+const Product = ({ product }: {product:ProductType}) => {
+    const navigate = useNavigate();
     return (
         <div className="group overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
             <div className="overflow-hidden bg-gray-100">
-                <div className="flex h-64 items-center justify-center text-gray-400">
-                    Нет изображения
-                </div>
+                {product.image ? (
+                    <img
+                        src={assetUrl(product.image, "products")}
+                        alt={product.name}
+                        className="h-64 w-full object-cover"
+                    />
+                ) : (
+                    <div className="flex h-64 items-center justify-center text-gray-400">
+                        Нет изображения
+                    </div>
+                )}
             </div>
 
             <div className="flex h-[250px] flex-col p-5">
@@ -47,7 +55,11 @@ const Product = ({ product }: Props) => {
                     </div>
 
                     <button
-                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/products/${product.id}`)
+
+                        }}
                         className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 active:scale-95"
                     >
                         Детальніше

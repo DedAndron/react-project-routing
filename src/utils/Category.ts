@@ -31,19 +31,23 @@ class Category {
     }
 
     public static async Create(
-        category: Omit<CategoryType, "id">
+        category: Omit<CategoryType, "id" | "url">,
+        image?: File
     ): Promise<string> {
         const formData = new FormData();
 
         formData.append("name", category.name);
         formData.append("slug", category.slug);
-        formData.append("url", category.url ?? "");
 
         if (category.parentId !== null) {
             formData.append(
                 "parentId",
                 String(category.parentId)
             );
+        }
+
+        if (image) {
+            formData.append("image", image);
         }
 
         const response = await fetch(

@@ -15,6 +15,19 @@ class Product {
 
         return await response.json();
     }
+    public static async GetProductById(
+        id: number
+    ): Promise<ProductType | null> {
+        const response = await fetch(
+            apiUrl(Product.path + id)
+        );
+
+        if (!response.ok) {
+            return null;
+        }
+
+        return await response.json();
+    }
 
     public static async GetProductsByCategoryId(
         id: number
@@ -31,7 +44,8 @@ class Product {
     }
 
     public static async Create(
-        product: Omit<ProductType, "id">
+        product: Omit<ProductType, "id" | "image">,
+        image?: File
     ): Promise<string> {
         const formData = new FormData();
 
@@ -52,6 +66,10 @@ class Product {
             "categoryId",
             String(product.categoryId)
         );
+
+        if (image) {
+            formData.append("image", image);
+        }
 
         const response = await fetch(
             apiUrl(Product.path + "create"),

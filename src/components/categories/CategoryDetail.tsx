@@ -48,7 +48,7 @@ const CategoryDetail = () => {
         );
     }
 
-    const imageUrl = assetUrl(category.url);
+    const imageUrl = assetUrl(category.url, "categories");
 
     return (
         <div className="mx-auto max-w-6xl rounded-2xl bg-white p-8 shadow-lg">

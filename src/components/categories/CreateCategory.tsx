@@ -5,7 +5,12 @@ import type { CategoryType } from "@/types/CategoryType.ts";
 import Category from "@/utils/Category.ts";
 import AppRoutes from "@/enums/AppRoutes.ts";
 
-type CategoryFormValues = { name: string; slug: string; url: string; parentId: string };
+type CategoryFormValues = {
+    name: string;
+    slug: string;
+    image: FileList;
+    parentId: string;
+};
 
 const CreateCategory = () => {
     const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -17,13 +22,29 @@ const CreateCategory = () => {
         void Category.GetAllCategories().then((data) => setCategories(data ?? []));
     }, []);
 
-    const onSubmit = async ({ parentId, ...values }: CategoryFormValues) => {
+    const onSubmit = async ({
+                                parentId,
+                                image,
+                                ...values
+                            }: CategoryFormValues) => {
         setSubmitError("");
+
         try {
-            await Category.Create({ ...values, parentId: parentId ? Number(parentId) : null });
+            await Category.Create(
+                {
+                    ...values,
+                    parentId: parentId ? Number(parentId) : null,
+                },
+                image?.[0]
+            );
+
             navigate(AppRoutes.CATEGORIES);
         } catch (error) {
-            setSubmitError(error instanceof Error ? error.message : "Не вдалося створити категорію.");
+            setSubmitError(
+                error instanceof Error
+                    ? error.message
+                    : "Не вдалося створити категорію."
+            );
         }
     };
 
@@ -40,9 +61,17 @@ const CreateCategory = () => {
                                                              placeholder="electronics" {...register("slug", {
             required: "Вкажіть slug.",
             pattern: {value: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: "Використовуйте латинські літери, цифри та дефіси."}
-        })} /></CategoryField><CategoryField label="URL зображення (необов'язково)" error={errors.url?.message}><input
-            className="form-input" type="url"
-            placeholder="https://example.com/category.jpg" {...register("url")} /></CategoryField><CategoryField
+        })} /></CategoryField><CategoryField
+            label="Зображення (необов'язково)"
+            error={errors.image?.message}
+        >
+            <input
+                className="form-input"
+                type="file"
+                accept="image/*"
+                {...register("image")}
+            />
+        </CategoryField><CategoryField
             label="Батьківська категорія (необов'язково)" error={errors.parentId?.message}><select
             className="form-input" defaultValue="" {...register("parentId")}>
             <option value="">Без батьківської категорії</option>

@@ -11,9 +11,9 @@ type ProductFormValues = {
     price: number;
     description: string;
     stockQty: number;
-    category_id: number;
-    image: string;
-    is_active: boolean;
+    categoryId: number;
+    image: FileList;
+    isActive: boolean;
 };
 
 const CreateProduct = () => {
@@ -22,7 +22,7 @@ const CreateProduct = () => {
     const [submitError, setSubmitError] = useState("");
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ProductFormValues>({
-        defaultValues: { is_active: true, stockQty: 0 },
+        defaultValues: { isActive: true, stockQty: 0 },
     });
 
     useEffect(() => {
@@ -42,13 +42,25 @@ const CreateProduct = () => {
         void loadCategories();
     }, []);
 
-    const onSubmit = async ({ image, ...values }: ProductFormValues) => {
+    const onSubmit = async ({
+                                image,
+                                ...values
+                            }: ProductFormValues) => {
         setSubmitError("");
+
         try {
-            await Product.Create({ ...values, images: image ? [image] : [] });
+            await Product.Create(
+                values,
+                image?.[0]
+            );
+
             navigate(AppRoutes.PRODUCTS);
         } catch (error) {
-            setSubmitError(error instanceof Error ? error.message : "Не вдалося створити товар.");
+            setSubmitError(
+                error instanceof Error
+                    ? error.message
+                    : "Не вдалося створити товар."
+            );
         }
     };
 
@@ -73,19 +85,48 @@ const CreateProduct = () => {
     <input className="form-input" type="number" min="0" {...register("stockQty", { required: "Вкажіть кількість.", valueAsNumber: true, min: { value: 0, message: "Кількість не може бути від'ємною." } })} />
     </FormField>
     </div>
-    <FormField label="Категорія" error={errors.category_id?.message}>
-    <select className="form-input" defaultValue="" {...register("category_id", { required: "Оберіть категорію.", valueAsNumber: true })} disabled={categories.length === 0}>
-    <option value="" disabled>{loadError || "Оберіть категорію"}</option>
-    {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-        </select>
+        <FormField
+            label="Категорія"
+            error={errors.categoryId?.message}
+        >
+            <select
+                className="form-input"
+                defaultValue=""
+                {...register("categoryId", {
+                    required: "Оберіть категорію.",
+                    valueAsNumber: true,
+                })}
+                disabled={categories.length === 0}
+            >
+                <option value="" disabled>
+                    {loadError || "Оберіть категорію"}
+                </option>
+
+                {categories.map(category => (
+                    <option
+                        key={category.id}
+                        value={category.id}
+                    >
+                        {category.name}
+                    </option>
+                ))}
+            </select>
         </FormField>
         <FormField label="Опис" error={errors.description?.message}>
     <textarea className="form-input min-h-28" {...register("description", { required: "Додайте опис товару." })} />
     </FormField>
-    <FormField label="URL зображення (необов'язково)" error={errors.image?.message}>
-    <input className="form-input" type="url" placeholder="https://example.com/image.jpg" {...register("image")} />
-    </FormField>
-    <label className="flex items-center gap-2 text-sm font-medium text-slate-700"><input type="checkbox" {...register("is_active")} /> Активний товар</label>
+        <FormField
+            label="Зображення (необов'язково)"
+            error={errors.image?.message}
+        >
+            <input
+                className="form-input"
+                type="file"
+                accept="image/*"
+                {...register("image")}
+            />
+        </FormField>
+    <label className="flex items-center gap-2 text-sm font-medium text-slate-700"><input type="checkbox" {...register("isActive")} /> Активний товар</label>
     {submitError && <p className="form-error" role="alert">{submitError}</p>}
         <button className="rounded-md bg-blue-700 px-5 py-2.5 font-medium text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-400" disabled={isSubmitting} type="submit">{isSubmitting ? "Збереження..." : "Створити товар"}</button>
         </form>

@@ -3,7 +3,7 @@ import {useNavigate} from "react-router";
 import { assetUrl } from "@/services/api.ts";
 
 const Category = ({ category }: {category:CategoryType}) => {
-    const imageUrl = assetUrl(category.url);
+    const imageUrl = assetUrl(category.url, "categories");
     const navigate = useNavigate(); //для кнопки Назад
     return (
         <div onClick={() => navigate(`/subcategories/${category.id}`)} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition hover:scale-105 hover:shadow-xl">

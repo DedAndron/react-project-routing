@@ -6,4 +6,5 @@ export type ProductType = {
     isActive: boolean;
     stockQty: number;
     categoryId: number;
+    image: string | null;
 };

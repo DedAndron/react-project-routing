@@ -25,7 +25,7 @@ export const apiUrl = (path: string) =>
     `${apiBaseUrl}${path.replace(/^\/+/, "")}`;
 
 export const assetUrl = (
-    path?: string,
+    path?: string | null,
     folder?: "categories" | "products"
 ) => {
     if (!path) {
