@@ -32,7 +32,7 @@ class Category {
 
     public static async Create(
         category: Omit<CategoryType, "id">
-    ): Promise<CategoryType> {
+    ): Promise<string> {
         const formData = new FormData();
 
         formData.append("name", category.name);
@@ -63,7 +63,7 @@ class Category {
             );
         }
 
-        return await response.json();
+        return await response.text();
     }
 }
 

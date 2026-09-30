@@ -1,40 +1,77 @@
-import type {ProductType} from "@/types/ProductType.ts";
+import type { ProductType } from "@/types/ProductType";
 import { apiUrl, getErrorMessage } from "@/services/api.ts";
 
 class Product {
-    private static readonly path = "product/";
-    public static async GetProductsByCategoryId(id: number):Promise<ProductType[]|null> {
+    private static readonly path = "Product/";
+
+    public static async GetAllProducts(): Promise<ProductType[] | null> {
         const response = await fetch(
-            apiUrl(Product.path+id)
+            apiUrl(Product.path + "all")
         );
+
         if (!response.ok) {
             return null;
         }
+
         return await response.json();
     }
 
-    public static async GetAllProducts(): Promise<ProductType[]|null> {
-        const response = await fetch(
-            apiUrl(Product.path + 'all')
-        );
-        if (!response.ok) {
+    public static async GetProductsByCategoryId(
+        id: number
+    ): Promise<ProductType[] | null> {
+        const products = await this.GetAllProducts();
+
+        if (!products) {
             return null;
         }
-        return await response.json();
+
+        return products.filter(
+            product => Number(product.categoryId) === id
+        );
     }
 
-    public static async Create(product: Omit<ProductType, "id">): Promise<ProductType> {
-        const response = await fetch(apiUrl(Product.path), {
-            method: "POST",
-            headers: { "Content-Type": "multipart/form-data" },
-            body: JSON.stringify(product),
-        });
+    public static async Create(
+        product: Omit<ProductType, "id">
+    ): Promise<string> {
+        const formData = new FormData();
+
+        formData.append("name", product.name);
+        formData.append(
+            "description",
+            product.description ?? ""
+        );
+        formData.append(
+            "price",
+            String(product.price)
+        );
+        formData.append(
+            "stockQty",
+            String(product.stockQty)
+        );
+        formData.append(
+            "categoryId",
+            String(product.categoryId)
+        );
+
+        const response = await fetch(
+            apiUrl(Product.path + "create"),
+            {
+                method: "POST",
+                body: formData,
+            }
+        );
 
         if (!response.ok) {
-            throw new Error(await getErrorMessage(response, "Не вдалося створити товар."));
+            throw new Error(
+                await getErrorMessage(
+                    response,
+                    "Не вдалося створити товар."
+                )
+            );
         }
 
-        return await response.json();
+        return await response.text();
     }
 }
+
 export default Product;
