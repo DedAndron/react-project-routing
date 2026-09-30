@@ -5,7 +5,7 @@ class Product {
     private static readonly path = "product/";
     public static async GetProductsByCategoryId(id: number):Promise<ProductType[]|null> {
         const response = await fetch(
-            apiUrl(Product.path + 'by-category/'+id)
+            apiUrl(Product.path+id)
         );
         if (!response.ok) {
             return null;
@@ -14,7 +14,9 @@ class Product {
     }
 
     public static async GetAllProducts(): Promise<ProductType[]|null> {
-        const response = await fetch(apiUrl(Product.path + 'all'));
+        const response = await fetch(
+            apiUrl(Product.path + 'all')
+        );
         if (!response.ok) {
             return null;
         }
@@ -24,7 +26,7 @@ class Product {
     public static async Create(product: Omit<ProductType, "id">): Promise<ProductType> {
         const response = await fetch(apiUrl(Product.path), {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "multipart/form-data" },
             body: JSON.stringify(product),
         });
 

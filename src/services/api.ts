@@ -1,26 +1,33 @@
-const removeTrailingSlashes = (value: string) => value.replace(/\/+$/, "");
-const addTrailingSlash = (value: string) => `${removeTrailingSlashes(value)}/`;
-const addLeadingSlash = (value: string) => value.startsWith("/") || /^https?:\/\//i.test(value) ? value : `/${value}`;
+const removeTrailingSlashes = (value: string) =>
+    value.replace(/\/+$/, "");
 
-/**
- * API requests use Vite's same-origin proxy by default. This avoids a CORS
- * preflight during local development; deployments can set VITE_API_URL to the
- * public API URL instead.
- */
-export const apiBaseUrl = addTrailingSlash(addLeadingSlash(
-    import.meta.env.VITE_API_URL
-    ?? (import.meta.env.VITE_PATH_TO_SERVER && import.meta.env.VITE_PATH_TO_API
-        ? `${import.meta.env.VITE_PATH_TO_SERVER}${import.meta.env.VITE_PATH_TO_API}`
-        : "/api/v1/"),
-));
+const addTrailingSlash = (value: string) =>
+    `${removeTrailingSlashes(value)}/`;
 
-const serverUrl = removeTrailingSlashes(
-    import.meta.env.VITE_ASSETS_URL ?? import.meta.env.VITE_PATH_TO_SERVER ?? "",
+const addLeadingSlash = (value: string) =>
+    value.startsWith("/") || /^https?:\/\//i.test(value)
+        ? value
+        : `/${value}`;
+
+export const apiBaseUrl = addTrailingSlash(
+    addLeadingSlash(
+        import.meta.env.VITE_API_URL ?? "/api/v1/"
+    )
 );
 
-export const apiUrl = (path: string) => `${apiBaseUrl}${path.replace(/^\/+/, "")}`;
+const serverUrl = removeTrailingSlashes(
+    import.meta.env.VITE_ASSETS_URL ??
+    import.meta.env.VITE_PATH_TO_SERVER ??
+    "https://localhost:7261"
+);
 
-export const assetUrl = (path?: string) => {
+export const apiUrl = (path: string) =>
+    `${apiBaseUrl}${path.replace(/^\/+/, "")}`;
+
+export const assetUrl = (
+    path?: string,
+    folder?: "categories" | "products"
+) => {
     if (!path) {
         return "";
     }
@@ -29,14 +36,36 @@ export const assetUrl = (path?: string) => {
         return path;
     }
 
-    return serverUrl ? `${serverUrl}/${path.replace(/^\/+/, "")}` : `/${path.replace(/^\/+/, "")}`;
+    const normalizedPath = path.replace(/^\/+/, "");
+
+    return folder
+        ? `${serverUrl}/${folder}/${normalizedPath}`
+        : `${serverUrl}/${normalizedPath}`;
 };
 
-export const getErrorMessage = async (response: Response, fallback: string) => {
+export const getErrorMessage = async (
+    response: Response,
+    fallback: string
+) => {
     try {
-        const body = await response.json() as { message?: string; error?: string; title?: string; errors?: Record<string, string[]> };
-        const validationError = body.errors && Object.values(body.errors).flat()[0];
-        return validationError ?? body.message ?? body.error ?? body.title ?? fallback;
+        const body = await response.json() as {
+            message?: string;
+            error?: string;
+            title?: string;
+            errors?: Record<string, string[]>;
+        };
+
+        const validationError =
+            body.errors &&
+            Object.values(body.errors).flat()[0];
+
+        return (
+            validationError ??
+            body.message ??
+            body.error ??
+            body.title ??
+            fallback
+        );
     } catch {
         return fallback;
     }

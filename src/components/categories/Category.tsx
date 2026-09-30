@@ -2,8 +2,6 @@ import type { CategoryType } from "@/types/CategoryType";
 import {useNavigate} from "react-router";
 import { assetUrl } from "@/services/api.ts";
 
-
-
 const Category = ({ category }: {category:CategoryType}) => {
     const imageUrl = assetUrl(category.url);
     const navigate = useNavigate(); //для кнопки Назад

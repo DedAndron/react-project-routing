@@ -1,72 +1,77 @@
 import type { ProductType } from "@/types/ProductType";
-import { assetUrl } from "@/services/api.ts";
+import { apiUrl, getErrorMessage } from "@/services/api.ts";
 
-type Props = {
-    product: ProductType;
-};
+class Product {
+    private static readonly path = "product/";
 
-const Product = ({ product }: Props) => {
+    public static async GetAllProducts(): Promise<ProductType[] | null> {
+        const response = await fetch(
+            apiUrl(Product.path + "all")
+        );
 
-    const image =
-        product.images.length > 0
-            ? assetUrl(`products/${product.images[0]}`)
-            : "https://placehold.co/600x400";
+        if (!response.ok) {
+            return null;
+        }
 
-    return (
-        <div className="group overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        return await response.json();
+    }
 
-            <div className="overflow-hidden bg-gray-100">
-                <img
-                    src={image}
-                    alt={product.name}
-                    className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-            </div>
+    public static async GetProductsByCategoryId(
+        id: number
+    ): Promise<ProductType[] | null> {
+        const products = await this.GetAllProducts();
 
-            <div className="flex h-[250px] flex-col p-5">
+        if (!products) {
+            return null;
+        }
 
-                <h2 className="line-clamp-2 text-lg font-semibold text-gray-900">
-                    {product.name}
-                </h2>
+        return products.filter(
+            product => Number(product.categoryId) === id
+        );
+    }
 
-                <p className="mt-3 line-clamp-3 text-sm text-gray-500">
-                    {product.description}
-                </p>
+    public static async Create(
+        product: Omit<ProductType, "id">
+    ): Promise<string> {
+        const formData = new FormData();
 
-                <div className="mt-auto">
+        formData.append("name", product.name);
+        formData.append(
+            "description",
+            product.description ?? ""
+        );
+        formData.append(
+            "price",
+            String(product.price)
+        );
+        formData.append(
+            "stockQty",
+            String(product.stockQty)
+        );
+        formData.append(
+            "categoryId",
+            String(product.categoryId)
+        );
 
-                    <div className="mb-4 flex items-center justify-between">
+        const response = await fetch(
+            apiUrl(Product.path + "create"),
+            {
+                method: "POST",
+                body: formData,
+            }
+        );
 
-                        <span className="text-3xl font-bold text-indigo-600">
-                            {product.price.toLocaleString()} ₴
-                        </span>
+        if (!response.ok) {
+            throw new Error(
+                await getErrorMessage(
+                    response,
+                    "Не вдалося створити товар."
+                )
+            );
+        }
 
-                        <span
-                            className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                                product.stockQty > 0
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-red-100 text-red-700"
-                            }`}
-                        >
-                            {product.stockQty > 0
-                                ? `${product.stockQty} шт`
-                                : "Немає"}
-                        </span>
-
-                    </div>
-
-                    <button
-                        className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 active:scale-95"
-                    >
-                        Детальніше
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-    );
-};
+        return await response.text();
+    }
+}
 
 export default Product;
